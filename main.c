@@ -83,6 +83,208 @@ void liberarBanco(bdPlvr *banco, int num_temas) {
     free(banco);
 }
 
+// Uma função que, de acordo com os erros, vai mostrar a etapa que o bonequinho está
+void escreveBonequinho(int erros){
+	switch(erros) {
+		case 0:
+			printf("\n +----+\n");
+			printf(" |    |\n");
+			printf(" |    |\n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf("_|_    \n\n");
+			break;
+		case 1:
+			printf("\n +----+\n");
+			printf(" |    |\n");
+			printf(" |    |\n");
+			printf(" |  (*_*)\n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf("_|_    \n\n");
+			break;
+		case 2:
+			printf("\n +----+\n");
+			printf(" |    |\n");
+			printf(" |    |\n");
+			printf(" |  (*_*)\n");
+			printf(" |    |\n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf("_|_    \n\n");
+			break;
+		case 3:
+			printf("\n +----+\n");
+			printf(" |    |\n");
+			printf(" |    |\n");
+			printf(" |  (*_*)\n");
+			printf(" |    |\n");
+			printf(" |  --|\n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf("_|_    \n\n");
+			break;
+		case 4:
+			printf("\n +----+\n");
+			printf(" |    |\n");
+			printf(" |    |\n");
+			printf(" |  (*_*)\n");
+			printf(" |    |\n");
+			printf(" |  --|--\n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf("_|_    \n\n");
+			break;
+		case 5:
+			printf("\n +----+\n");
+			printf(" |    |\n");
+			printf(" |    |\n");
+			printf(" |  (*_*)\n");
+			printf(" |    |\n");
+			printf(" |  --|--\n");
+			printf(" |    |\n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf("_|_    \n\n");
+			break;
+		case 6:
+			printf("\n +----+\n");
+			printf(" |    |\n");
+			printf(" |    |\n");
+			printf(" |  (*_*)\n");
+			printf(" |    |\n");
+			printf(" |  --|--\n");
+			printf(" |    |\n");
+			printf(" |    ^\n");
+			printf(" |     \n");
+			printf("_|_    \n\n");
+			break;
+		case 7:
+			printf("\n +----+\n");
+			printf(" |    |\n");
+			printf(" |    |\n");
+			printf(" |  (*_*)\n");
+			printf(" |    |\n");
+			printf(" |  --|--\n");
+			printf(" |    |\n");
+			printf(" |    ^\n");
+			printf(" |     \\\n");
+			printf("_|_    \n\n");
+			break;
+		case 8:
+			printf("\n +----+\n");
+			printf(" |    |\n");
+			printf(" |    |\n");
+			printf(" |  (*_*)\n");
+			printf(" |    |\n");
+			printf(" |  --|--\n");
+			printf(" |    |\n");
+			printf(" |    ^\n");
+			printf(" |   / \\\n");
+			printf("_|_    \n\n");
+			break;
+		default:
+			printf("Essa quantidade de erro não é possível");
+	}
+}
+
+void forca(char tema[20], char palavra[20]){
+
+	int erros = 0;
+    int quantAcertos = 0;
+
+    // Calculando o tamanho da palavra usando a função strlen
+    int tamanho = strlen(palavra);
+
+    // Inicializa o array de tracinhos
+    char *tracinhos = calloc(tamanho + 1, sizeof(char));
+    for (int i = 0; i < tamanho; i++) {
+        tracinhos[i] = '_';
+    }
+
+    // Mostrar o tema
+    printf("TEMA: %s\n\n", tema);
+
+    // Exibe a forca inicial (sem corpo)
+    escreveBonequinho(erros);
+
+    // Exibe os tracinhos
+    for (int i = 0; i < tamanho; i++) {
+        printf("%c ", tracinhos[i]);
+    }
+    printf("\n");
+
+	while(erros < 8){
+
+        char letra;
+		int quantAcertosTemp = 0;
+
+		// Pegando a letra do usuário
+		printf("\n\nDigite uma letra: ");
+		scanf("%c", &letra);
+		getchar();
+
+        // Verificando se tem a letra na palavra
+		for(int i = 0; palavra[i] != '\0'; i++){
+			if(palavra[i] == letra){
+                quantAcertosTemp++;
+                if(tracinhos[i] == '_'){
+                    tracinhos[i] = letra;
+                    quantAcertos++;
+                }
+			}
+		}
+
+		// Se errar, adiciona mais uma etapa do corpo na forca
+		if(quantAcertosTemp == 0){
+			erros++;
+		}
+
+		// Sai do loop caso acerte
+		if(quantAcertos == tamanho) {
+			printf("\nVocê venceu! A palavra era: %s\n", palavra);
+			break;
+		}
+
+        // Limpa o terminal
+        system("cls");
+
+        // Mostrar o tema
+        printf("TEMA: %s\n\n", tema);
+
+		// Exibe a forca
+        escreveBonequinho(erros);
+
+        // Exibe os tracinhos e letras, caso tenha
+        for (int i = 0; i < tamanho; i++) {
+            printf("%c ", tracinhos[i]);
+        }
+        printf("\n");
+    }
+
+    // Caso saia do loop com 8 erros, será imprimido a mensagem de derrora
+	if(erros == 8){
+        printf("\nVocê perdeu! A palavra era: %s\n", palavra);
+	}
+
+    // Limpa o termminal quando acabar
+    system("cls");
+
+    // Libera a memória alocada
+    free(tracinhos);
+}
+
 //Funcao para exibir o menu principal.
 void menu(bdPlvr **banco, int *num_temas) {
     int opcao;
@@ -121,25 +323,12 @@ void menu(bdPlvr **banco, int *num_temas) {
 
             sortearTemaEPalavra(*banco, *num_temas, &tema_sorteado, &palavra_sorteada);
 
-            printf("Tema sorteado foi %s e a palavra sorteada foi %s",tema_sorteado,palavra_sorteada);
+            system("cls");
+
+            // Chama a função da forca em si
+            forca(tema_sorteado, palavra_sorteada);
+
             break;
-
-            //------------------------------------------ALIK---------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         case 2:
             printf("Opcao Ver Ranking ainda nao implementada.\n");
