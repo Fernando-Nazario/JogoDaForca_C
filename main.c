@@ -3,7 +3,10 @@
 #include <string.h>
 #include <locale.h>
 #include <time.h>
+#include <ctype.h>
 
+int pontuacao_usuario = 0; //Pontuação final do usuário.
+int pontos_usuario_atual = 0; //Pontuação atual do jogo.
 
 
 //Estrutura do banco de palavras
@@ -40,7 +43,7 @@ void adicionarTema(bdPlvr *banco, int indice_tema, char *tema) {
 
     banco[indice_tema].tema = strdup(tema); //Adicionando o tema no banco[indice]
 
-    //Verificando se o tema foi duplicado
+    //Verificando se o tema foi copiado para o banco.
     if (!banco[indice_tema].tema) {
         printf("Falha ao duplicar o tema.\n");
         exit(1);
@@ -53,6 +56,7 @@ void adicionarTema(bdPlvr *banco, int indice_tema, char *tema) {
 // Função para adicionar uma palavra a um tema no banco.
 void adicionarPalavraAoTema(bdPlvr *banco, int indice_tema, char *palavra) {
     banco[indice_tema].palavras = (char **)realloc(banco[indice_tema].palavras, (banco[indice_tema].qtd_palavras + 1) * sizeof(char *)); //Realocando o array dentro de banco de palavras para adicionar mais 1 palavra;
+
     //Verificar se a realocação foi feita com sucesso
     if (!banco[indice_tema].palavras) {
         printf("Erro ao realocar memoria para palavras.\n");
@@ -71,6 +75,35 @@ void adicionarPalavraAoTema(bdPlvr *banco, int indice_tema, char *palavra) {
     banco[indice_tema].qtd_palavras++;
 }
 
+//Função para sortear os temas e palavras.
+void sortearTemaEPalavra(bdPlvr *banco, int num_temas, char **tema, char **palavra) {
+
+    srand(time(NULL));
+
+    if (num_temas == 0) {
+        *tema = NULL;
+        *palavra = NULL;
+        return;
+    }
+
+    // Sorteia um tema aleatoriamente
+    int indice_tema = rand() % num_temas;
+
+    // Verifica se o tema tem palavras associadas
+    if (banco[indice_tema].qtd_palavras == 0) {
+        *tema = NULL;
+        *palavra = NULL;
+        return;
+    }
+
+    // Sorteia uma palavra aleatoriamente dentro do tema selecionado
+    int indice_palavra = rand() % banco[indice_tema].qtd_palavras;
+
+    // Retorna os resultados
+    *tema = banco[indice_tema].tema;
+    *palavra = banco[indice_tema].palavras[indice_palavra];
+}
+
 //Funçaõ para liberar memoria alocada para o banco de palavras.
 void liberarBanco(bdPlvr *banco, int num_temas) {
     for (int i = 0; i < num_temas; i++) {
@@ -83,10 +116,306 @@ void liberarBanco(bdPlvr *banco, int num_temas) {
     free(banco);
 }
 
+// Uma função que, de acordo com os erros, vai mostrar a etapa que o bonequinho está
+void escreveBonequinho(int erros){
+	switch(erros) {
+		case 0:
+			printf("\n +----+\n");
+			printf(" |    |\n");
+			printf(" |    |\n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf("_|_    \n\n");
+			break;
+		case 1:
+			printf("\n +----+\n");
+			printf(" |    |\n");
+			printf(" |    |\n");
+			printf(" |  (*_*)\n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf("_|_    \n\n");
+			break;
+		case 2:
+			printf("\n +----+\n");
+			printf(" |    |\n");
+			printf(" |    |\n");
+			printf(" |  (*_*)\n");
+			printf(" |    |\n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf("_|_    \n\n");
+			break;
+		case 3:
+			printf("\n +----+\n");
+			printf(" |    |\n");
+			printf(" |    |\n");
+			printf(" |  (*_*)\n");
+			printf(" |    |\n");
+			printf(" |  --|\n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf("_|_    \n\n");
+			break;
+		case 4:
+			printf("\n +----+\n");
+			printf(" |    |\n");
+			printf(" |    |\n");
+			printf(" |  (*_*)\n");
+			printf(" |    |\n");
+			printf(" |  --|--\n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf("_|_    \n\n");
+			break;
+		case 5:
+			printf("\n +----+\n");
+			printf(" |    |\n");
+			printf(" |    |\n");
+			printf(" |  (*_*)\n");
+			printf(" |    |\n");
+			printf(" |  --|--\n");
+			printf(" |    |\n");
+			printf(" |     \n");
+			printf(" |     \n");
+			printf("_|_    \n\n");
+			break;
+		case 6:
+			printf("\n +----+\n");
+			printf(" |    |\n");
+			printf(" |    |\n");
+			printf(" |  (*_*)\n");
+			printf(" |    |\n");
+			printf(" |  --|--\n");
+			printf(" |    |\n");
+			printf(" |    ^\n");
+			printf(" |     \n");
+			printf("_|_    \n\n");
+			break;
+		case 7:
+			printf("\n +----+\n");
+			printf(" |    |\n");
+			printf(" |    |\n");
+			printf(" |  (*_*)\n");
+			printf(" |    |\n");
+			printf(" |  --|--\n");
+			printf(" |    |\n");
+			printf(" |    ^\n");
+			printf(" |     \\\n");
+			printf("_|_    \n\n");
+			break;
+		case 8:
+			printf("\n +----+\n");
+			printf(" |    |\n");
+			printf(" |    |\n");
+			printf(" |  (*_*)\n");
+			printf(" |    |\n");
+			printf(" |  --|--\n");
+			printf(" |    |\n");
+			printf(" |    ^\n");
+			printf(" |   / \\\n");
+			printf("_|_    \n\n");
+			break;
+		default:
+			printf("Essa quantidade de erro não é possível");
+	}
+}
+
+//Função principal para a forca.
+void forca(bdPlvr *banco, int num_temas){
+    system("cls"); //Limpando terminal
+
+	int erros = 0; //Acumulador de erros.
+    int quantAcertos = 0; //Acumulador de acertos.
+
+    char *palavra; 
+    char *tema;
+
+    int jogar_novamente_escolha = 0; //Varíavel que vai salvar a escolha do usuário lá na frente.
+
+    int i = 0; //Contador i
+
+    sortearTemaEPalavra(banco, num_temas, &tema, &palavra); //Sortenado a palavra e o tema atual.
+
+    //Loop para deixar a palavra atual totalmente minúscula.
+    while(palavra[i]){
+        palavra[i] = tolower(palavra[i]);
+        i++;
+    }
+
+
+    // Calculando o tamanho da palavra usando a função strlen
+    int tamanho = strlen(palavra);
+
+    // Inicializa o array de tracinhos
+    char *tracinhos = calloc(tamanho + 1, sizeof(char));
+    for (int i = 0; i < tamanho; i++) {
+        tracinhos[i] = '_';
+    }
+
+    // Mostrar o tema
+    printf("TEMA: %s\n\n", tema);
+
+    // Exibe a forca inicial (sem corpo)
+    escreveBonequinho(erros);
+
+    // Exibe os tracinhos
+    for (int i = 0; i < tamanho; i++) {
+        printf("%c ", tracinhos[i]);
+    }
+    printf("\n");
+
+    //Loop principal da gameplay
+	while(erros < 8){
+
+        char letra;
+		int quantAcertosTemp = 0;
+
+		// Pegando a letra do usuário
+		printf("\n\nDigite uma letra: ");
+		scanf(" %c", &letra);
+		getchar();
+
+        // Verificando se tem a letra na palavra
+		for(int i = 0; palavra[i] != '\0'; i++){
+			if(palavra[i] == letra){
+                quantAcertosTemp++;
+                if(tracinhos[i] == '_'){
+                    tracinhos[i] = letra;
+                    quantAcertos++;
+                }
+			}
+		}
+
+		// Se errar, adiciona mais uma etapa do corpo na forca
+		if(quantAcertosTemp == 0){
+			erros++;
+		}
+
+		// Sai do loop caso acerte
+		if(quantAcertos == tamanho) {
+            pontos_usuario_atual+=10; //Adicionando 10 pontos a variável que vai guardar o valor temporariamente para essas rodadas.
+			printf("\nVoce venceu! A palavra era: %s\n\n", palavra);
+            printf("---(+10 pontos)---\n\n");
+            printf("Deseja continuar?\n");
+            printf("1.Sim\t2.Nao\n\n");
+            printf("---->");
+
+            //Verificando a validade da resposta do usuário
+            while(1){
+                if(scanf(" %d",&jogar_novamente_escolha) == 1 && jogar_novamente_escolha > 0 && jogar_novamente_escolha <=2){
+                    break;
+                }else{
+                    system("cls");
+                    printf("Comando invalido. Tente novamente!\n");
+                    printf("Deseja continuar?\n\n");
+                    printf("1.Sim\t2.Nao\n\n");
+                    printf("---->");
+                    while(getchar() != '\n');
+                }
+            }
+
+            //Verificando o que o usuário escolheu.
+            if(jogar_novamente_escolha == 1){
+                forca(banco,num_temas); //Reinicia a forca.
+                jogar_novamente_escolha = 0; //Reseta a escolha.
+            }else{
+                //Se a pontuação atual temporaria for maior que a pontuação do usuário ele substitui.
+                if(pontos_usuario_atual > pontuacao_usuario){
+                    pontuacao_usuario = pontos_usuario_atual;
+                }
+                pontos_usuario_atual = 0; //Zera a variavel temporaria.
+                jogar_novamente_escolha = 0; //Reseta a escolha.
+            }
+            break;
+		}
+
+        // Limpa o terminal
+        system("cls");
+
+        // Mostrar o tema
+        printf("TEMA: %s\n\n", tema);
+
+		// Exibe a forca
+        escreveBonequinho(erros);
+
+        // Exibe os tracinhos e letras, caso tenha
+        for (int i = 0; i < tamanho; i++) {
+            printf("%c ", tracinhos[i]);
+        }
+        printf("\n");
+    }
+
+    // Caso saia do loop com 8 erros, será imprimido a mensagem de derrora
+	if(erros == 8){
+        printf("\nVoce perdeu! A palavra era: %s\n\n", palavra);
+        printf("Deseja jogar novamente?\n\n");
+        printf("1.Sim\t2.Nao\n\n");
+        printf("---->");
+
+        //Verificando validade da resposta do usuário.
+        while(1){
+            if(scanf(" %d",&jogar_novamente_escolha) == 1 && jogar_novamente_escolha > 0 && jogar_novamente_escolha <= 2){
+                break;
+            }else{
+                while(getchar() != '\n');
+                system("cls");
+                printf("Comando invalido. Tente novamente!\n");
+                printf("Deseja jogar novamente?\n\n");
+                printf("1.Sim\t2.Nao\n\n");
+                printf("---->");
+            }
+        }
+
+        //Verificando qual foi a resposta do usuário
+        if(jogar_novamente_escolha == 1){
+            forca(banco,num_temas); //Reinicia a forca.
+
+            //Substitui os pontos caso seja maior para formar um novo recorde.
+            if(pontos_usuario_atual > pontuacao_usuario){
+                pontuacao_usuario = pontos_usuario_atual;
+                pontos_usuario_atual = 0;
+            }
+
+            pontos_usuario_atual = 0;//Zera os pontos temporarios.
+        }else{ //Volta para o menu
+
+            //Caso ele tenha feito mais pontos substitui aqui também.
+            if(pontos_usuario_atual > pontuacao_usuario){
+                pontuacao_usuario = pontos_usuario_atual;
+                pontos_usuario_atual = 0;
+            }
+
+            pontos_usuario_atual = 0; //Zera a pontuação temporaria.
+            jogar_novamente_escolha = 0; //Reseta a escolha.
+        }
+
+	}
+
+    // Limpa o termminal quando acabar
+    system("cls");
+
+    // Libera a memória alocada
+    free(tracinhos);
+}
+
 //Funcao para exibir o menu principal.
 void menu(bdPlvr **banco, int *num_temas) {
-    int opcao;
-    char *criadores[] = {"Fernando", "Italo", "Marcelo", "Alik", "Luy"};
+
+    int opcao; //Opção do menu que o usuário vai escolhar logo em frente.
+
+    char *criadores[] = {"Fernando", "Italo", "Marcelo", "Alik", "Luy"}; //Nome dos criadores.
 
     //Enquanto o comando do usuário não for válida ele continuará exibindo o menu e pedindo o comando, quando o comando for válido ele dá break.
     while (1) {
@@ -101,10 +430,11 @@ void menu(bdPlvr **banco, int *num_temas) {
         printf("---> ");
 
         //Verificando se o comando do usuário é um número e menor igual a 6.
-        if (scanf("%d", &opcao) == 1 && opcao >= 1 && opcao <= 6) {
+        if (scanf(" %d", &opcao) == 1 && opcao >= 1 && opcao <= 6) {
             while (getchar() != '\n'); // Limpa o buffer
             break;
         } else {
+            system("cls");
             printf("\nComando invalido. Tente novamente.\n");
             while (getchar() != '\n'); // Limpa o buffer
         }
@@ -114,41 +444,24 @@ void menu(bdPlvr **banco, int *num_temas) {
     switch (opcao) {
 
         //Jogar
-        // A palavra e o tema são sorteadores
         case 1: {
-            char *tema_sorteado;
-            char *palavra_sorteada;
+            
+            //Iniciando a gameplay.
+            forca(*banco,*num_temas);
 
-            sortearTemaEPalavra(*banco, *num_temas, &tema_sorteado, &palavra_sorteada);
-
-            printf("Tema sorteado foi %s e a palavra sorteada foi %s",tema_sorteado,palavra_sorteada);
             break;
-
-            //------------------------------------------ALIK---------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        //Ver ranking
         case 2:
-            printf("Opcao Ver Ranking ainda nao implementada.\n");
+            //Mostrando o ranking.
+            system("cls");
+            printf("\n=== Record ===\n");
+            printf("---%dpts---\n",pontuacao_usuario);
             break;
 
         //Exibir temas
-        // Os temas disponiveis são exibidos.
         case 3:
             system("cls");
+            //Loop para mostrar os temas.
             printf("\n=== Temas Disponiveis ===\n");
             for (int i = 0; i < *num_temas; i++) {
                 printf("%d. %s\n", i + 1, (*banco)[i].tema);
@@ -159,17 +472,17 @@ void menu(bdPlvr **banco, int *num_temas) {
         //Adicionar novo tema
         case 4: {
             system("cls");
-            char novo_tema[50];
-            int qtd_novas_palavras;
+            char novo_tema[50]; //Nome do tema.
+            int qtd_novas_palavras; //Quantidade de palavras que terá dentro do tema.
 
             // Verificar se a entrada do usuário é válida.
             while (1) {
                 printf("\nQuantas palavras deseja adicionar ao novo tema? "); //Obtendo a quantidade de palavras que o novo tema terá.
-                if (scanf("%d", &qtd_novas_palavras) == 1 && qtd_novas_palavras > 0) {
+                if (scanf(" %d", &qtd_novas_palavras) == 1 && qtd_novas_palavras > 0) {
                     while (getchar() != '\n'); // Limpa o buffer de entrada
                     break; // Entrada válida, sair do loop
                 } else {
-                    printf("Entrada inválida. Tente novamente: ");
+                    printf("Entrada invalida. Tente novamente: ");
                     while (getchar() != '\n'); // Limpa o buffer de entrada
                 }
             }
@@ -234,32 +547,6 @@ void menu(bdPlvr **banco, int *num_temas) {
     }
 }
 
-//Função para sortear os temas e palavras.
-void sortearTemaEPalavra(bdPlvr *banco, int num_temas, char **tema, char **palavra) {
-    if (num_temas == 0) {
-        *tema = NULL;
-        *palavra = NULL;
-        return;
-    }
-
-    // Sorteia um tema aleatoriamente
-    int indice_tema = rand() % num_temas;
-
-    // Verifica se o tema tem palavras associadas
-    if (banco[indice_tema].qtd_palavras == 0) {
-        *tema = NULL;
-        *palavra = NULL;
-        return;
-    }
-
-    // Sorteia uma palavra aleatoriamente dentro do tema selecionado
-    int indice_palavra = rand() % banco[indice_tema].qtd_palavras;
-
-    // Retorna os resultados
-    *tema = banco[indice_tema].tema;
-    *palavra = banco[indice_tema].palavras[indice_palavra];
-}
-
 
 int main() {
     setlocale(LC_ALL, "");
@@ -276,7 +563,7 @@ int main() {
         {"Carro", "Moto", "Barco", "Aviao", "Helicoptero"},           // Veiculos
         {"Cachorro", "Gato", "Leao", "Macaco", "Flamingo"},            // Animais
         {"Maca", "Banana", "Laranja", "Mango", "Uva"},                 // Frutas
-        {"Brasil", "Estados Unidos", "China", "Franca", "Japao"},      // Paises
+        {"Brasil", "EstadosUnidos", "China", "Franca", "Japao"},      // Paises
         {"Cadeira", "Mesa", "Televisao", "Computador", "Lampada"},     // Objetos
         {"Coracao", "Pulmao", "Cerebro", "Estomago", "Rim"},           // Corpo Humano
         {"Vermelho", "Azul", "Verde", "Amarelo", "Preto"},             // Cores
